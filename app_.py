@@ -24,7 +24,10 @@ def load_objects():
         objects=pickle.load(f)
     return (objects['best_model'],objects['ohe'],objects['feature_columns'],objects['num_cols'],objects['cat_cols'])
 
-best_model,ohe,feature_columns,num_cols,cat_cols=load_objects()
+best_model,ohe,feature_columns,num_cols,cat_cols = load_objects()
+st.write("Длина feature_columns:", len(feature_columns))
+st.write("Первые 10:", feature_columns[:10])
+st.write("Последние 10:", feature_columns[-10:])
 cat_cols = [c for c in cat_cols if c != 'seats']
 
 
