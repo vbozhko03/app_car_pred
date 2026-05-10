@@ -20,10 +20,10 @@ st.title("Предсказание цены автомобиля")
 # Загружаем лучшую модель
 @st.cache_resource
 def load_objects():
-    with open('best_model.pkl','rb') as f:
+    with open('best_model_fixed.pkl','rb') as f:
         objects=pickle.load(f)
-    return (objects['best_model'],objects['ohe'],objects['feature_columns'],objects['num_cols'],objects['cat_cols'])
-best_model,ohe,feature_columns,num_cols,cat_cols=load_objects()
+    return (objects['best_model_fixed'],objects['ohe'],objects['feature_columns'],objects['num_cols'],objects['cat_cols'])
+best_model_fixed,ohe,feature_columns,num_cols,cat_cols=load_objects()
 cat_cols = [c for c in cat_cols if c != 'seats']
 def predict_price(input_df):
     X_cat = ohe.transform(input_df[cat_cols])
@@ -34,7 +34,7 @@ def predict_price(input_df):
     X_num['hp_per_l'] = X_num['max_power']*1000/(X_num['engine']+1)
     X_final = pd.concat([X_num, X_cat_df], axis=1)
 
-    return np.expm1(best_model.predict(X_final))
+    return np.expm1(best_model_fixed.predict(X_final))
 # Боковая панель
 menu=st.sidebar.selectbox(
     "Выбор режима",
@@ -136,7 +136,7 @@ elif menu == "Предсказание":
 elif menu == "Веса":
     st.header("Важность признаков")
 
-    coef=best_model.coef_
+    coef=best_model_fixed.coef_
     imp=pd.DataFrame({'Признак':feature_columns,'Вес':coef})
     imp=imp.sort_values('Вес',key=lambda x:abs(x),ascending=False)
 
