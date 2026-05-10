@@ -36,20 +36,17 @@ def predict_price(input_df):
     X_num['power_per_engine'] = X_num['max_power']/(X_num['engine']+1)
     X_num['hp_per_l'] = X_num['max_power']*1000/(X_num['engine']+1)
 
-
-    X_num['mileage_was_missing'] = 0
-    X_num['engine_was_missing'] = 0
-    X_num['max_power_was_missing'] = 0
-    X_num['torque_was_missing'] = 0
-    X_num['max_torque_rpm_was_missing'] = 0
-
     X_final = pd.concat([X_num, X_cat_df], axis=1)
 
-    # Принудительное выравнивание
-    X_final = X_final.reindex(columns=feature_columns, fill_value=0)
+    # Добавляем недостающие колонки со значением 0
+    for col in feature_columns:
+        if col not in X_final.columns:
+            X_final[col] = 0
+
+    X_final = X_final[feature_columns]
 
     return np.expm1(best_model.predict(X_final))
-# Боковая панель
+
 menu=st.sidebar.selectbox(
     "Выбор режима",
     ("EDA","Предсказание","Веса"))
